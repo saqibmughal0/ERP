@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import CardDataStats from '../../components/CardDataStats';
 import ChartOne from '../../components/Charts/ChartOne';
 import ChartThree from '../../components/Charts/ChartThree';
@@ -8,10 +9,44 @@ import MapOne from '../../components/Maps/MapOne';
 import TableOne from '../../components/Tables/TableOne';
 
 const ECommerce: React.FC = () => {
+  const [clients, setClients] = useState<any[]>([]);
+  const [email, setEmail] = useState<string>('');
+ 
+  
+   useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/clients');
+        setClients(response.data.clients); // Save clients in state
+      } catch (error) {
+        console.error('Error fetching clients:', error);
+      }
+    };
+
+    fetchClients();
+  }, []);
+  
+  useEffect(() => {
+    const fetchUserCount = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/api/auth/register'); // Update API URL if needed
+            setEmail(response.data.email);
+        } catch (error) {
+            console.error('Error fetching user count:', error);
+        }
+    };
+
+    fetchUserCount();
+  }, []);
+
+  
+
+  
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <CardDataStats title="Total views" total="$3.456K" rate="0.43%" levelUp>
+        {/* <CardDataStats title="Total views" total="$3.456K" rate="0.43%" levelUp> */}
+        <CardDataStats title="Total Clients" total={clients.length.toString()} rate="0.43%" levelUp>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -72,7 +107,7 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Users" total="3.456" rate="0.95%" levelDown>
+        <CardDataStats title="Total Users" total={email.length.toString()} rate="0.95%" levelDown>
           <svg
             className="fill-primary dark:fill-white"
             width="22"

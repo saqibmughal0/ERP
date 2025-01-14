@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { MdDelete } from 'react-icons/md';
+import Logo from "../../images/logo/Kick.png"
 
-// Define types for form data
 interface Item {
   item: string;
   cost: string;
@@ -22,7 +22,6 @@ interface FormData {
 }
 
 function InvoiceForm() {
-  // Initialize the form data state with types
   const initialFormData: FormData = {
     invoiceNumber: '',
     dateIssued: '',
@@ -37,7 +36,6 @@ function InvoiceForm() {
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
 
-  // Handle form input changes
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -60,7 +58,6 @@ function InvoiceForm() {
     }
   };
 
-  // Handle adding a new item row
   const addItem = () => {
     setFormData({
       ...formData,
@@ -68,29 +65,34 @@ function InvoiceForm() {
     });
   };
 
-  // Handle form submit
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const existingInvoices = JSON.parse(localStorage.getItem('invoices')) || [];
-    localStorage.setItem(
-      'invoices',
-      JSON.stringify([...existingInvoices, formData]),
-    );
 
-    alert('Invoice saved successfully!');
+    const response = await fetch('http://localhost:5000/api/saveInvoice', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
 
-    // Reset form fields
-    setFormData(initialFormData);
+    if (response.ok) {
+      alert('Invoice saved successfully!');
+      setFormData(initialFormData);
+    } else {
+      alert('Error saving invoice');
+    }
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <div className="flex gap-8">
         <div className="p-6 bg-white shadow-md rounded-lg w-full lg:w-[80rem]">
-          {/* Company Info */}
+          {/* Invoice Info */}
           <div className="w-full bg-[#F2F3F4] flex flex-wrap lg:flex-nowrap items-center justify-between p-5 rounded-lg">
             <div className="mb-6">
-              <h3 className="text-lg font-semibold">Your Company</h3>
+              {/* <h3 className="text-lg font-semibold">Your Company</h3> */}
+              <img src={Logo} className='w-[10rem]' alt="Kicks" />
               <p>Office Address</p>
               <p>Phone: 123-456-7890</p>
             </div>
@@ -171,23 +173,21 @@ function InvoiceForm() {
                   {formData.items.map((item, index) => (
                     <tr key={index} className="border">
                       <td className="p-6">
-                        <select
+                        <input
+                          type="text"
                           name="item"
-                          className="border border-gray-300 p-2 w-[15rem] rounded-md"
+                          className="border border-gray-300 p-2 w-full rounded-md"
+                          placeholder="Item"
                           value={item.item}
                           onChange={(e) => handleChange(e, index)}
-                        >
-                          <option value="">Select Company</option>
-                          <option value="Company A">Company A</option>
-                          <option value="Company B">Company B</option>
-                        </select>
+                        />
                       </td>
                       <td className="p-6">
                         <input
                           type="text"
                           name="cost"
                           className="border border-gray-300 p-2 w-full rounded-md"
-                          placeholder='00'
+                          placeholder="00"
                           value={item.cost}
                           onChange={(e) => handleChange(e, index)}
                         />
@@ -196,8 +196,8 @@ function InvoiceForm() {
                         <input
                           type="text"
                           name="qty"
-                          pattern='1'
                           className="border border-gray-300 p-2 w-full rounded-md"
+                          placeholder="1"
                           value={item.qty}
                           onChange={(e) => handleChange(e, index)}
                         />
@@ -206,8 +206,8 @@ function InvoiceForm() {
                         <input
                           type="text"
                           name="price"
-                          placeholder='PKR'
                           className="border border-gray-300 p-2 w-full rounded-md"
+                          placeholder="0.00"
                           value={item.price}
                           onChange={(e) => handleChange(e, index)}
                         />
@@ -215,13 +215,12 @@ function InvoiceForm() {
                       <td className="p-6">
                         <button
                           type="button"
-                          className="text-red-600"
-                          onClick={() => {
-                            const updatedItems = formData.items.filter(
-                              (_, i) => i !== index,
-                            );
-                            setFormData({ ...formData, items: updatedItems });
-                          }}
+                          onClick={() =>
+                            setFormData({
+                              ...formData,
+                              items: formData.items.filter((_, i) => i !== index),
+                            })
+                          }
                         >
                           <MdDelete />
                         </button>
@@ -230,14 +229,14 @@ function InvoiceForm() {
                   ))}
                 </tbody>
               </table>
-              <button
-                type="button"
-                className="mt-4 text-sm bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600"
-                onClick={addItem}
-              >
-                + Add Item
-              </button>
             </div>
+            <button
+              type="button"
+              onClick={addItem}
+              className="mt-4 text-sm bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600"
+            >
+              Add Item
+            </button>
           </div>
 
           {/* Footer */}
@@ -279,15 +278,26 @@ function InvoiceForm() {
           </div>
         </div>
 
-        <div className="w-full lg:w-[30rem] h-[17rem] p-6 bg-white shadow-md rounded-lg space-y-4">
-          <button
+
+          {/* Submit Button */}
+          {/* <div className="flex justify-end mt-6">
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-6 py-2 rounded-md"
+            >
+              Save Invoice
+            </button>
+          </div> */}
+                  <div className="w-full lg:w-[30rem] h-[17rem] p-6 bg-white shadow-md rounded-lg space-y-4">
+         <button
             type="submit"
             className="w-full bg-blue-600 text-white px-6 py-2 rounded-md shadow-md hover:bg-blue-700"
           >
             Save Invoice
           </button>
         </div>
-      </div>
+        </div>
+      
     </form>
   );
 }

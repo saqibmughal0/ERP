@@ -1,8 +1,11 @@
+import ManufactoringTable from "../../components/Manufactoring/ManufactoringTable"
 
 
 function Manufactoring() {
   return (
-    <div>Manufactoring</div>
+    <>
+    <ManufactoringTable />
+    </>
   )
 }
 

@@ -1,8 +1,13 @@
+import Addnewsales from "../../components/AddSales/Addnewsales"
 
 
 function Sales() {
   return (
-    <div>Sales</div>
+    <>
+ 
+    <Addnewsales />
+
+    </>
   )
 }
 

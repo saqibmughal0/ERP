@@ -1,8 +1,11 @@
+import AddContact from "../../components/AddContact/AddContact"
 
 
 function Contacts() {
   return (
-    <div>Contacts</div>
+    <>
+    <AddContact />
+    </>
   )
 }
 
