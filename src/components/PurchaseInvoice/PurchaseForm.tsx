@@ -1152,8 +1152,7 @@ const PurchaseForm: React.FC = () => {
                 onClick={() => removeItem(index)}
                 className="bg-red-500 text-white px-2 py-1 rounded"
               >
-                Removegit branch
-
+                Remove
               </button>
             </div>
           ))}
